@@ -12,8 +12,14 @@ Edit: Anh Khoa
 - Install these packages into the Raspberry:
 ```cmd
 pip install pyserial
+```
+```cmd
 pip install RPi.GPIO
+```
+```cmd
 git clone https://github.com/nakhoagithub/LoraE32-Raspberry.git
+```
+```cmd
 cd LoraE32-Raspberry
 ```
 - Create main.py
