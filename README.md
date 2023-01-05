@@ -47,9 +47,8 @@ while True:
   message = lora.receiveMessage(from_address, from_channel, useChecksum=True)
   lora.showConfig()
   #message = lora.sendMessage(5, 7, {"a": "5"}, useChecksum=True)
-  #message = lora.sendMessage(6, 7, {"a": s}, useChecksum=True)
       
-  print("Message:", message) #, message1)
+  print("Message:", message)
   time.sleep(2)
 
 ```
