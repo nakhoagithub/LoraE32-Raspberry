@@ -1,6 +1,3 @@
-# Power by https://github.com/effevee
-# Edited by Anh Khoa
-
 import RPi.GPIO as GPIO
 import serial
 import time
@@ -58,7 +55,7 @@ class LoraE32:
                 0b11:['10dBm', '18dBm', '21dBm'] }
     
 
-    def __init__(self, PinM0, PinM1, Model='433T20D', Port='U2', Baudrate=9600, Parity='8N1', AirDataRate='2.4k', Address=5, Channel=7, debug=False):
+    def __init__(self, PinM0, PinM1, PinAUX, Model='433T20D', Port='U2', Baudrate=9600, Parity='8N1', AirDataRate='2.4k', Address=5, Channel=7, debug=False):
         ''' constructor for ebyte E32 LoRa module '''
         # configuration in dictionary
         self.config = {}
@@ -75,10 +72,9 @@ class LoraE32:
         self.config['wutime'] = 0                  # wakeup time from sleep mode (default 0 = 250ms)
         self.config['fec'] = 1                     # forward error correction (default 1 = on)
         self.config['txpower'] = 0                 # transmission power (default 0 = 20dBm/100mW)
-        # 
         self.PinM0 = PinM0                         # M0 pin number
         self.PinM1 = PinM1                         # M1 pin number
-        #self.PinAUX = PinAUX                       # AUX pin number
+        self.PinAUX = PinAUX                       # AUX pin number
         self.M0 = None                             # instance for M0 Pin (set operation mode)
         self.M1 = None                             # instance for M1 Pin (set operation mode)
         self.AUX = None                            # instance for AUX Pin (device status : 0=busy - 1=idle)
@@ -112,13 +108,14 @@ class LoraE32:
                 print(self.serdev)  
             GPIO.setmode(GPIO.BCM)
             GPIO.setwarnings(False)
-            GPIO.setup(self.PinM0, GPIO.OUT)
-            GPIO.setup(self.PinM1, GPIO.OUT)
+            self.M0 = GPIO.setup(self.PinM0, GPIO.OUT)
+            self.M1 = GPIO.setup(self.PinM1, GPIO.OUT)
             GPIO.output(self.PinM0, GPIO.LOW)
             GPIO.output(self.PinM1, GPIO.HIGH)
-            #self.AUX = Pin(self.PinAUX, Pin.IN, Pin.PULL_UP)
+            self.AUX = GPIO.setup(self.PinAUX, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+            
             if self.debug:
-                print("PinM0:", self.PinM0, "PinM1:", self.PinM1)
+                print("PinM0:", self.PinM0, "PinM1:", self.PinM1, "PinAUX", self.PinAUX)
             self.setConfig('setConfigPwrDwnSave')
             return "OK"
         
@@ -316,7 +313,7 @@ class LoraE32:
             if len(result) != 4:
                 return "NOK"
             # decode result
-            freq = ebyteE32.FREQV.get(hex(result[1]),'unknown')
+            freq = LoraE32.FREQV.get(hex(result[1]),'unknown')
             # show version
             if result[0] == 0xc3:
                 print('================= E32 MODULE ===================')
@@ -427,7 +424,7 @@ class LoraE32:
         ''' Wait for the E32 LoRa module to become idle (AUX pin high) '''
         count = 0
         # loop for device busy
-        while True:
+        while not GPIO.input(self.PinAUX):
             # increment count
             count += 1
             # maximum wait time 100 ms
@@ -492,5 +489,3 @@ class LoraE32:
         GPIO.setup(self.PinM1, int(bits[1]))
         # wait a moment
         time.sleep(0.05)
-        
-    

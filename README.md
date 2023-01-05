@@ -29,13 +29,14 @@ import time
 
 M0pin = 17
 M1pin = 27
+PinAUX = 22
 
 # Port
 # 'U1': /dev/ttyS0 or /dev/ttyAMA0
 # 'U2': /dev/ttyUSB0 
 # 'U3': /dev/ttyUSB1
 
-lora = LoraE32(M0pin, M1pin, Port='U2', Address=1, Channel=7, debug=True)
+lora = LoraE32(M0pin, M1pin, PinAUX, Port='U2', Address=1, Channel=7, debug=True)
 lora.start()
 lora.showConfig()
 
