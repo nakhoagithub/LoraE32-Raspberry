@@ -485,7 +485,7 @@ class LoraE32:
         # get operation mode settings (default normal)
         bits = LoraE32.OPERMODE.get(mode, '00')
         # set operation mode
-        GPIO.setup(self.PinM0, int(bits[0]))
-        GPIO.setup(self.PinM1, int(bits[1]))
+        GPIO.output(self.PinM0, int(bits[0]))
+        GPIO.output(self.PinM1, int(bits[1]))
         # wait a moment
         time.sleep(0.05)
